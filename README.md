@@ -4,7 +4,7 @@
 
 As a Cloud Solution Architect, I work with many partners who want to migrate their application to Kubernetes and want a checklist of considerations. 
 
-The items listed here were inspired by my own findings as well as [The AKS Checklist](https://www.the-aks-checklist.com/)
+The items listed here were inspired by my own findings as well as [The AKS Checklist](https://www.the-aks-checklist.com/).
 
 ## Cluster
 
@@ -34,13 +34,6 @@ The items listed here were inspired by my own findings as well as [The AKS Check
 
 ## Security 
 
-Consider the following:
-
-*  Are you subject to security audits?
-*  Do you have any compliance requirements?
-
-Checklist: 
-
 -  Read [The Definitive Guide to Securing Kubernetes](https://info.aquasec.com/securing_kubernetes) whitepaper
 -  Use a K8S security Product (e.g. Sysdig, AquaSec, Twistlock, etc.)
 -  Enable [Azure Defender for Kubernetes](https://docs.microsoft.com/en-us/azure/security-center/defender-for-kubernetes-introduction)
@@ -56,26 +49,28 @@ NOTE: By default, K8S Secrets are only encrypted at rest
 -  Use [Azure Key Vault](https://docs.microsoft.com/en-us/azure/key-vault/general/key-vault-integrate-kubernetes) to store Secrets/Certificates
 -  Don't inject secrets as environment vars (visible via kubectl describe)
 -  Don't store secrets in container images
+-  Understand [AKS Quota and limits](https://docs.microsoft.com/en-us/azure/aks/quotas-skus-regions)
 
 ## Compute
 
--  Set resource quotas on namespaces
+-  Set [resource quotas on namespaces](https://docs.microsoft.com/en-us/azure/aks/operator-best-practices-scheduler#enforce-resource-quotas)
 -  If necessary, [harden AKS agent nodes](https://clouddamcdnprodep.azureedge.net/gdc/gdc8LXmoZ/original)
 
 ## Availability
 
 -  Use [Uptime SLA](https://docs.microsoft.com/en-us/azure/aks/uptime-sla) for production clusters
    -  NOTE: By Default K8S API does not have SLA.  Only premium tier
--  Configure readiness, liveness and readiness probes
+-  Configure [liveness and readiness probes](https://docs.microsoft.com/en-us/azure/application-gateway/ingress-controller-add-health-probes)
 -  Use Deployments and run at least 1 replica
--  Configure logging, app monitoring an alerting
--  Set Pod Disruption Budgets
+-  Configure [app logging, monitoring and alerting](https://docs.microsoft.com/en-us/azure/architecture/microservices/logging-monitoring)
+-  Enable exporting of [AKS Control Plane logs](https://docs.microsoft.com/en-us/azure/aks/view-control-plane-logs)
+-  Set [Pod Disruption Budgets](https://docs.microsoft.com/en-us/azure/aks/operator-best-practices-scheduler#plan-for-availability-using-pod-disruption-budgets) to prevent downtime during a planned disruption event
 -  Decide if [Availability Zones](https://docs.microsoft.com/en-us/azure/aks/availability-zones) or [multiple regions](https://docs.microsoft.com/en-us/azure/aks/operator-best-practices-multi-region) meet your needs
 
 ##  Scaling
 
--  Use Pod Requests and Limits
--  Use HPA
+-  Use [Pod Requests and Limits](https://docs.microsoft.com/en-us/azure/aks/developer-best-practices-resource-management#define-pod-resource-requests-and-limits)
+-  Use [Horizontal Pod Autoscaler](https://docs.microsoft.com/en-us/azure/aks/concepts-scale#horizontal-pod-autoscaler)
 -  Use [Cluster Autoscaling](https://docs.microsoft.com/en-us/azure/aks/cluster-autoscaler)
 
 ## Network 
@@ -83,49 +78,56 @@ NOTE: By default, K8S Secrets are only encrypted at rest
 -  Clearly understand your North-South and East-West network requirements
 -  Use a [Network Policy](https://docs.microsoft.com/en-us/azure/aks/use-network-policies) (Calico or Azure Network Policy)
    -  Example: [Network Policy Recipes](https://github.com/ahmetb/kubernetes-network-policy-recipes)
--  Use a [WAF](https://azure.microsoft.com/en-us/services/web-application-firewall/)
-   -  Examples: [AppGW](https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/ag-overview), [Front Door](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/afds-overview), [Nginx+](https://docs.nginx.com/nginx-waf/)
 -  Use [Traffic Manager](https://azure.microsoft.com/en-us/services/traffic-manager/) or [Front Door](https://azure.microsoft.com/en-us/services/frontdoor/) to front traffic
 -  Only use [Internal Load Balancer](https://docs.microsoft.com/en-us/azure/aks/internal-lb)
 -  Use [Azure Firewall](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/containers/aks/secure-baseline-aks#egress-traffic-flow) to inspect egress traffic for data leakage.
+-  Use [Ingress Controller](https://docs.microsoft.com/en-us/azure/aks/ingress-basic)
+-  Use a [WAF](https://azure.microsoft.com/en-us/services/web-application-firewall/)
+   -  Examples: [AppGW](https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/ag-overview), [Front Door](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/afds-overview), [Nginx+](https://docs.nginx.com/nginx-waf/)
 
 ##  Governance
 
--  Use Azure Policy for Kubernetes 
-- Example: https://docs.microsoft.com/en-us/azure/aks/policy-reference
+-  Use [Azure Policy for Kubernetes](https://docs.microsoft.com/en-us/azure/aks/use-azure-policy)
+   - Example: [AKS Policy Refernce](https://docs.microsoft.com/en-us/azure/aks/policy-reference)
 
 ## Service Mesh
 
 -  Don't use a service mesh unless you have a specific need
 
-## Business Continuity
-##  Multi-Region
+## Business Continuity / Multi-Region
 
--  NOTE: AKS cluster is region-based. 
+AKS cluster is a region-based service.  To enable availability in multiple regions, you will need to deploy a new AKS instance in each desired region.
 
-
--  Use Paired Regions
--  Enable geo-redundancy on your ACR
--  If app includes volumes, use a 3rd party solution (Portworx, Kasten)
+-  Use [Azure Paired Regions](https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions)
+-  Enable [ACR Geo-replication](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-geo-replication)
 
 ## Deployment
 
--  Use GitOps
+-  Use [GitOps](https://www.weave.works/technologies/gitops/)
 -  Don't use the default namespace
   
 ## Multi-Tenancy
 
--  NOTE: Some tenants can be in shared env; Some tenants might be big enough to require separate cluster
--  NOTE: Namespace does NOT provide any isolation, but is a common practice for grouping tenants
--  Must be coupled with strong Network and Compute isolation (see above)
+-  Some tenants can be in shared env; Some tenants might be big enough to require separate cluster
+-  Namespace does NOT provide any isolation, but is a common practice for grouping tenants
 -  Use Helm or CRD to package new tenants
+
+## Storage
+
+Stateless processes are easier to be operate, scale and tolerate failure.  We recommend using PaaS services; however, sometimes storing state inside the container is unavoidable and you must use storage into the container.
+
+- Understand [AKS](https://docs.microsoft.com/en-us/azure/aks/concepts-storage) and [K8S](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) storage concepts
+- Pick the right [Storage Class](https://docs.microsoft.com/en-us/azure/aks/concepts-storage#storage-classes)
+- Use [PVC](https://docs.microsoft.com/en-us/azure/aks/azure-disks-dynamic-pv) instead of a [PV](https://docs.microsoft.com/en-us/azure/aks/azure-disk-volume)
+- Use [Velero](https://velero.io/), [Portworx](https://docs.portworx.com/portworx-install-with-kubernetes/cloud/azure/aks/) or [Kasten](https://www.kasten.io/) for Backup and Multi-region resiliency.
 
 ## Tooling
 
--  Helm
--  Flux (GitOps)
--  Kubectl aliases
--  kubectx
+-  [Helm](https://helm.sh/)
+-  [Flux - GitOps](https://toolkit.fluxcd.io/)
+-  [Kubectl aliases](https://github.com/ahmetb/kubectl-aliases)
+-  [kubectx](https://github.com/ahmetb/kubectx)
+-  [k9s](https://k9scli.io/)
  
 References:
 
